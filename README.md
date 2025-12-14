@@ -95,7 +95,7 @@ Key settings live in config.py, including:
   - DEFAULT_TOP_K (retrieval depth)
   - DEFAULT_MODEL (gpt-4o-mini)
   - embedding model name + dimension
-    - Note: ensure DEFAULT_DB_PATH correctly points to your DuckDB file location (e.g., backend/sp_vector.duckdb or wherever you placed it in your repo).
+    - Note: ensure DEFAULT_DB_PATH correctly points to the DuckDB file location (e.g., backend/sp_vector.duckdb).
 ### 3) Run the Streamlit app
 - streamlit run app.py
 
