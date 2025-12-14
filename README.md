@@ -9,21 +9,40 @@ Travel advice can be high-stakes: visitors need trustworthy guidance on **where 
 This project solves that by using a RAG pipeline: the assistant *retrieves relevant passages from a curated São Paulo travel knowledge base* and generates responses based on those sources.
 
 ## Architecture / Pipeline Explanation
-**High-level flow**
-1. **User asks a question** in the Streamlit chat interface.
-2. The system converts the question into an embedding using **SentenceTransformers (`all-MiniLM-L6-v2`)**.
+
+This project is a Retrieval-Augmented Generation (RAG) system. Instead of relying only on the LLM’s “memory,” it first **retrieves the most relevant passages** from a local knowledge base (São Paulo travel documents) and then uses those passages as context to generate grounded answers.
+
+1. **User query (Streamlit UI)**
+   - The user asks a question in the Streamlit chat interface (`app.py`).
+
+2. **Query embedding**
+   - The question is converted into a numeric vector (embedding) using **SentenceTransformers** (`all-MiniLM-L6-v2`).
+   - This embedding represents the semantic meaning of the query.
    - `all-MiniLM-L6-v2 was used for multilingual context.
-3. The app queries a **DuckDB vector database** (`sp_vector.duckdb`) for the **top-k most similar chunks**.
-4. A **CrewAI agent** decides when retrieval is needed (tool-based design) and uses retrieved context to answer.
-5. The Streamlit UI displays:
-   - the final answer
-   - retrieved sources + **similarity scores** (transparency)
+
+3. **Vector retrieval (DuckDB)**
+   - The app queries the **DuckDB vector store** (`sp_vector.duckdb`) to find the **top-k most similar text chunks** (cosine similarity).
+   - The system returns:
+     - chunk text
+     - document metadata (e.g., title/source if stored)
+     - similarity score for each retrieved chunk
+
+4. **Agent reasoning + response generation (CrewAI + OpenAI)**
+   - A **CrewAI agent** uses a tool/function to retrieve from DuckDB when needed.
+   - The agent sends the retrieved chunks as context to **OpenAI `gpt-4o-mini`** to generate the final response.
+
+5. **Transparent output (answer + sources)**
+   - Streamlit renders the final answer and also displays the retrieved sources with similarity scores, so users can see *why* the assistant answered the way it did.
 
 **Components**
 - `app.py`: Streamlit UI (chat, sidebar settings, source display, session state)
 - `backend/database.py`: DuckDB operations + embedding model loading + similarity query
 - `backend/agent.py`: CrewAI agent + tool for retrieval + response generation
 - `config.py`: central configuration (DB path, top_k, embedding model, max iterations, default LLM)
+
+## Architecture Diagram
+<img width="2667" height="1500" alt="image" src="https://github.com/user-attachments/assets/ff362e4a-bcf5-475c-973f-427ebc559d29" />
+
 
 ## Document Collection Summary (19 documents)
 The DuckDB store contains **19 documents**, chunked into **510 total chunks**. The collection was chosen to support curated content and realistic tourist questions, covering:
