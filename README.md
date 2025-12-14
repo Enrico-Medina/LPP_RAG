@@ -80,4 +80,5 @@ Key settings live in config.py, including:
 ### 3) Run the Streamlit app
 - streamlit run app.py
 
-# Link to Streamlit deployment: https://lpprag-dgbrzupe6eptc5y2zdyr5l.streamlit.app/
+# Link to Streamlit deployment:
+https://lpprag-dgbrzupe6eptc5y2zdyr5l.streamlit.app/
